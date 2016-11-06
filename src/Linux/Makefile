@@ -1,7 +1,7 @@
 # This software is distributed under the following license:
 # http://sflow.net/license.html
 
-FEATURES_ALL= ULOG NFLOG PCAP TCP DOCKER KVM XEN NVML OVS CUMULUS OS10
+FEATURES_ALL= ULOG NFLOG SAMPLETAP PCAP TCP DOCKER KVM XEN NVML OVS CUMULUS OS10
 BINDIR     ?= /usr/sbin
 INITDIR    ?= /etc/init.d
 CONFDIR    ?= /etc
@@ -80,6 +80,9 @@ LIBS_ULOG=
 
 CFLAGS_NFLOG= -I/usr/include/libnfnetlink
 LIBS_NFLOG= -lnfnetlink
+
+CFLAGS_SAMPLETAP =
+LIBS_SAMPLETAP = -life
 
 CFLAGS_PCAP=
 LIBS_PCAP=-lpcap
@@ -164,6 +167,7 @@ OBJS_KVM=mod_kvm.o
 OBJS_DOCKER=mod_docker.o
 OBJS_ULOG=mod_ulog.o
 OBJS_NFLOG=mod_nflog.o
+OBJS_SAMPLETAP=mod_sampletap.o
 OBJS_PCAP=mod_pcap.o
 OBJS_TCP=mod_tcp.o
 OBJS_NVML=mod_nvml.o
@@ -189,6 +193,8 @@ DOCKER: mod_docker.so
 ULOG: mod_ulog.so
 
 NFLOG: mod_nflog.so
+
+SAMPLETAP: mod_sampletap.so
 
 PCAP: mod_pcap.so
 
@@ -240,6 +246,15 @@ mod_nflog.o: mod_nflog.c $(HEADERS)
 
 mod_nflog.so: $(OBJS_NFLOG)
 	$(LD) -o $@ $(OBJS_NFLOG) $(LDFLAGS_SHARED) $(LIBS_NFLOG)
+
+#----------------------------
+
+
+mod_sampletap.o: mod_sampletap.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $*.c  $(CFLAGS_SAMPLETAP)
+
+mod_sampletap.so: $(OBJS_SAMPLETAP)
+	$(LD) -o $@ $(OBJS_SAMPLETAP) $(LDFLAGS_SHARED) $(LIBS_SAMPLETAP)
 
 #----------------------------
 
@@ -385,6 +400,7 @@ mod_kvm.o: mod_kvm.c $(HEADERS)
 mod_docker.o: mod_docker.c $(HEADERS)
 mod_ulog.o: mod_ulog.c $(HEADERS)
 mod_nflog.o: mod_nflog.c $(HEADERS)
+mod_sampletap.o: mod_sampletap.c $(HEADERS)
 mod_pcap.o: mod_pcap.c $(HEADERS)
 mod_tcp.o: mod_tcp.c $(HEADERS)
 mod_nvml.o: mod_nvml.c $(HEADERS)

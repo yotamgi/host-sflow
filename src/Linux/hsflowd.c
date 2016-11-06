@@ -1621,6 +1621,8 @@ extern "C" {
       EVLoadModule(sp->rootModule, "mod_tcp", sp->modulesPath);
     if(sp->ulog.ulog)
       EVLoadModule(sp->rootModule, "mod_ulog", sp->modulesPath);
+    if(sp->sampletap.sampletap)
+      EVLoadModule(sp->rootModule, "mod_sampletap", sp->modulesPath);
     if(sp->nflog.nflog)
       EVLoadModule(sp->rootModule, "mod_nflog", sp->modulesPath);
     if(sp->nvml.nvml)

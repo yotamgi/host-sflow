@@ -1,0 +1,15 @@
+SAMPLED_DEV=$1
+TAPDEV=sampletap
+
+ip tuntap add $TAPDEV mode tap
+ip link set dev $TAPDEV up
+
+tc qdisc add dev $DEV handle ffff: ingress
+
+tc filter add dev $DEV parent ffff: \
+	matchall skip_sw action \
+	sample rate 12 trunc 40 mark 12 src 01:02:03:04:05:06 type 0xdead
+
+tc filter add parent ffff: dev $DEV protocol all \
+	u32 skip_hw match mark 12 0xff \
+	action mirred egress redirect dev $TAPDEV \

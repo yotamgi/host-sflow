@@ -57,6 +57,7 @@ extern "C" {
     HSPOBJ_DOCKER,
     HSPOBJ_ULOG,
     HSPOBJ_NFLOG,
+    HSPOBJ_SAMPLETAP,
     HSPOBJ_PCAP,
     HSPOBJ_TCP,
     HSPOBJ_CUMULUS,
@@ -76,6 +77,7 @@ extern "C" {
     "docker",
     "ulog",
     "nflog",
+    "sampletap",
     "pcap",
     "tcp",
     "cumulus",
@@ -1008,6 +1010,11 @@ extern "C" {
 	    sp->nflog.nflog = YES;
 	    level[++depth] = HSPOBJ_NFLOG;
 	    break;
+	  case HSPTOKEN_SAMPLETAP:
+	    if((tok = expectToken(sp, tok, HSPTOKEN_STARTOBJ)) == NULL) return NO;
+	    sp->sampletap.sampletap = YES;
+	    level[++depth] = HSPOBJ_SAMPLETAP;
+	    break;
 	  case HSPTOKEN_PCAP:
 	    if((tok = expectToken(sp, tok, HSPTOKEN_STARTOBJ)) == NULL) return NO;
 	    sp->pcap.pcap = YES;
@@ -1097,6 +1104,12 @@ extern "C" {
 	    break;
 	  case HSPTOKEN_NFLOGPROBABILITY:
 	    if((tok = expectDouble(sp, tok, &sp->nflog.probability, 0.0, 1.0)) == NULL) return NO;
+	    break;
+	  case HSPTOKEN_SAMPLETAPRATE:
+	    if((tok = expectInteger32(sp, tok, &sp->sampletap.rate, 1, 0xFFFFFFFF)) == NULL) return NO;
+	    break;
+	  case HSPTOKEN_SAMPLETAPDEV:
+	    if((tok = expectDevice(sp, tok, &sp->sampletap.tapdev)) == NULL) return NO;
 	    break;
 	  case HSPTOKEN_JSONPORT:
 	    if((tok = expectInteger32(sp, tok, &sp->json.port, 1025, 65535)) == NULL) return NO;
@@ -1259,6 +1272,25 @@ extern "C" {
 	    case HSPTOKEN_PROBABILITY:
 	    case HSPTOKEN_NFLOGPROBABILITY:
 	      if((tok = expectDouble(sp, tok, &sp->nflog.probability, 0.0, 1.0)) == NULL) return NO;
+	      break;
+	    default:
+	      unexpectedToken(sp, tok, level[depth]);
+	      return NO;
+	      break;
+	    }
+	  }
+	  break;
+
+	case HSPOBJ_SAMPLETAP:
+	  {
+	    switch(tok->stok) {
+	    case HSPTOKEN_RATE:
+	    case HSPTOKEN_SAMPLETAPRATE:
+	      if((tok = expectInteger32(sp, tok, &sp->sampletap.rate, 1, 0xFFFFFFFF)) == NULL) return NO;
+	      break;
+	    case HSPTOKEN_DEV:
+	    case HSPTOKEN_SAMPLETAPDEV:
+	      if((tok = expectDevice(sp, tok, &sp->sampletap.tapdev)) == NULL) return NO;
 	      break;
 	    default:
 	      unexpectedToken(sp, tok, level[depth]);

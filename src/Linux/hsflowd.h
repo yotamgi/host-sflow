@@ -437,6 +437,11 @@ extern "C" {
       uint32_t ds_options;
     } nflog;
     struct {
+      bool sampletap;
+      char* tapdev;
+      uint32_t rate;
+    } sampletap;
+    struct {
       bool pcap;
       HSPPcap *pcaps;
       uint32_t numPcaps;
